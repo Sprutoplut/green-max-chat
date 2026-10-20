@@ -18,9 +18,11 @@
 
 ## Установка
 
-В папке, куда склонирован репозиторий:
+Склонируйте репозиторий и перейдите в его папку:
 
 ```bash
+git clone https://github.com/Sprutoplut/green-max-chat.git
+cd green-max-chat
 npm install
 ```
 
