@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { activeChatIdFrom } from "../routes.js";
-import { useSession } from "../session.jsx";
-import { useChats } from "./chat-context.jsx";
-import { ChatSidebar } from "./ChatSidebar.jsx";
-import { IconRail } from "./IconRail.jsx";
+import { activeChatIdFrom } from "../routes.ts";
+import { useSession } from "../session.tsx";
+import { ChatSidebar } from "./ChatSidebar.tsx";
+import { useChats } from "./chat-context.tsx";
+import { IconRail } from "./IconRail.tsx";
 
 export function ChatLayout() {
   const { session, logout } = useSession();
@@ -22,6 +22,8 @@ export function ChatLayout() {
     logout();
     navigate("/login", { replace: true });
   }
+
+  if (!session) return null;
 
   return (
     <div className={activeChatId ? "app has-chat" : "app"}>

@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { connectInstance } from "../api.js";
-import { useSession } from "../session.jsx";
+import { connectInstance, errorMessage } from "../api.ts";
+import { useSession } from "../session.tsx";
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ export function LoginPage() {
     document.title = "Вход — Чаты";
   }, []);
 
-  async function onSubmit(event) {
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const id = idInstance.trim();
     const token = apiTokenInstance.trim();
@@ -31,7 +31,7 @@ export function LoginPage() {
       login(result.session);
       navigate("/chats", { replace: true, state: { restarting: result.restarting } });
     } catch (requestError) {
-      setError(requestError.message || "Не удалось войти");
+      setError(errorMessage(requestError, "Не удалось войти"));
     } finally {
       setPending(false);
     }
@@ -42,9 +42,7 @@ export function LoginPage() {
       <div className="pattern" aria-hidden="true" />
       <form className="login-card" onSubmit={onSubmit}>
         <h1>Вход в чат</h1>
-        <p className="lead">
-          Укажите данные инстанса GREEN-API. Адрес API уже задан: https://api.green-api.com
-        </p>
+        <p className="lead">Укажите данные инстанса GREEN-API. Адрес API уже задан: https://api.green-api.com</p>
         <label>
           idInstance
           <input
@@ -68,11 +66,7 @@ export function LoginPage() {
           />
         </label>
         <label className="check">
-          <input
-            type="checkbox"
-            checked={showToken}
-            onChange={(event) => setShowToken(event.target.checked)}
-          />
+          <input type="checkbox" checked={showToken} onChange={(event) => setShowToken(event.target.checked)} />
           Показать токен
         </label>
         {error && <p className="form-error">{error}</p>}

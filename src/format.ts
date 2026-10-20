@@ -1,4 +1,4 @@
-export function normalizePhone(input) {
+export function normalizePhone(input: string) {
   let digits = String(input || "").replace(/\D/g, "");
   if (digits.length === 11 && digits.startsWith("8")) {
     digits = `7${digits.slice(1)}`;
@@ -7,7 +7,7 @@ export function normalizePhone(input) {
   return null;
 }
 
-export function formatPhone(value) {
+export function formatPhone(value: string | null | undefined) {
   const digits = String(value || "").replace(/\D/g, "");
   if (/^7\d{10}$/.test(digits)) {
     return `+7 ${digits.slice(1, 4)} ${digits.slice(4, 7)}-${digits.slice(7, 9)}-${digits.slice(9)}`;
@@ -19,7 +19,7 @@ export function formatPhone(value) {
   return `+${digits}`;
 }
 
-export function formatTime(timestamp) {
+export function formatTime(timestamp: number) {
   const date = new Date(timestamp);
   if (Number.isNaN(date.getTime())) return "";
   const now = new Date();
@@ -31,7 +31,7 @@ export function formatTime(timestamp) {
 
 const AVATAR_COLORS = ["#e35d6a", "#e39b3a", "#3aa86a", "#3d8bfd", "#8b6adf", "#d35d9a", "#3aa0b5"];
 
-export function colorFor(value) {
+export function colorFor(value: string | null | undefined) {
   const text = String(value || "");
   let hash = 0;
   for (let index = 0; index < text.length; index += 1) {
@@ -40,7 +40,7 @@ export function colorFor(value) {
   return AVATAR_COLORS[hash % AVATAR_COLORS.length];
 }
 
-export function initial(title) {
+export function initial(title: string | null | undefined) {
   const text = String(title || "").trim().replace(/^\+/, "");
   return text ? text.slice(0, 1).toUpperCase() : "?";
 }

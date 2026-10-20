@@ -1,26 +1,27 @@
 import { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { chatPreview, sortChats } from "../chatModel.js";
-import { colorFor, formatPhone, formatTime, initial } from "../format.js";
-import { IconPlus, IconSearch } from "../icons.jsx";
-import { useSession } from "../session.jsx";
-import { useChats } from "./chat-context.jsx";
+import { chatPreview, sortChats } from "../chatModel.ts";
+import { colorFor, formatPhone, formatTime, initial } from "../format.ts";
+import { IconPlus, IconSearch } from "../icons.tsx";
+import { useSession } from "../session.tsx";
+import { useChats } from "./chat-context.tsx";
 
-export function ChatSidebar({ activeChatId }) {
+export function ChatSidebar({ activeChatId }: { activeChatId: string | null }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { session } = useSession();
-  const { chats } = useChats();
+  const { chats, chatsLoading } = useChats();
   const [query, setQuery] = useState("");
+  const added = useMemo(() => chats.filter((chat) => chat.fromApi), [chats]);
 
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    return sortChats(chats).filter((chat) => {
+    return sortChats(added).filter((chat) => {
       if (!needle) return true;
       const phone = formatPhone(chat.phone).toLowerCase();
       return chat.title.toLowerCase().includes(needle) || phone.includes(needle) || chat.phone.includes(needle);
     });
-  }, [chats, query]);
+  }, [added, query]);
 
   function openNewChat() {
     if (location.pathname === "/chats/new") return;
@@ -35,12 +36,14 @@ export function ChatSidebar({ activeChatId }) {
     });
   }
 
+  if (!session) return null;
+
   return (
     <aside className="sidebar">
       <header className="side-head">
         <div>
           <h1>
-            Чаты <span className="count">{chats.length}</span>
+            Чаты <span className="count">{added.length}</span>
           </h1>
           <p className="me-phone">{formatPhone(session.phone) || "Аккаунт MAX"}</p>
         </div>
@@ -60,9 +63,11 @@ export function ChatSidebar({ activeChatId }) {
       <div className="chat-list">
         {visible.length === 0 && (
           <p className="empty-list">
-            {chats.length === 0
-              ? "Чатов пока нет. Нажмите +, введите номер и отправьте сообщение."
-              : "Ничего не найдено"}
+            {chatsLoading && added.length === 0
+              ? "Загружаем чаты…"
+              : added.length === 0
+                ? "Нет чатов, которым вы написали через API. Нажмите + и отправьте сообщение."
+                : "Ничего не найдено"}
           </p>
         )}
         {visible.map((chat) => {

@@ -1,10 +1,11 @@
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { ChatLayout } from "./components/ChatLayout.jsx";
-import { ChatsState } from "./components/ChatsState.jsx";
-import { ChatThread } from "./components/ChatThread.jsx";
-import { LoginPage } from "./components/LoginPage.jsx";
-import { NewChatModal } from "./components/NewChatModal.jsx";
-import { useSession, SessionProvider } from "./session.jsx";
+import { Navigate, Route, Routes, useLocation, type Location } from "react-router-dom";
+import { ChatLayout } from "./components/ChatLayout.tsx";
+import { ChatsState } from "./components/ChatsState.tsx";
+import { ChatThread } from "./components/ChatThread.tsx";
+import { LoginPage } from "./components/LoginPage.tsx";
+import { NewChatModal } from "./components/NewChatModal.tsx";
+import { SessionProvider, useSession } from "./session.tsx";
+import type { AppLocationState } from "./types.ts";
 
 function RootRedirect() {
   const { session } = useSession();
@@ -26,10 +27,10 @@ function PrivateChat() {
 function AppRoutes() {
   const { session } = useSession();
   const location = useLocation();
-  const background = location.state?.background;
+  const background = (location.state as AppLocationState | null)?.background;
   const tree = (
     <>
-      <Routes location={background || location}>
+      <Routes location={(background || location) as Location}>
         <Route path="/" element={<RootRedirect />} />
         <Route path="/login" element={<GuestRoute />} />
         <Route path="/chats" element={<PrivateChat />}>

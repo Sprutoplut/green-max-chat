@@ -88,7 +88,17 @@ svg {
   place-items: center;
 }
 
-.rail-btn.muted { color: #5f6b7a; }
+.rail-btn.logout {
+  width: 64px;
+  height: auto;
+  padding: 6px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+  line-height: 1.2;
+  color: #d5dde6;
+}
 
 .rail-btn.active {
   background: rgba(61, 139, 253, 0.16);

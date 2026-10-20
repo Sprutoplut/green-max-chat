@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { createClient } from "../api.js";
-import { ensureChat } from "../chatModel.js";
-import { formatPhone, normalizePhone } from "../format.js";
-import { useSession } from "../session.jsx";
-import { useChats } from "./chat-context.jsx";
+import { createClient, errorMessage } from "../api.ts";
+import { ensureChat } from "../chatModel.ts";
+import { formatPhone, normalizePhone } from "../format.ts";
+import { useSession } from "../session.tsx";
+import type { AppLocationState } from "../types.ts";
+import { useChats } from "./chat-context.tsx";
 
 export function NewChatModal() {
   const navigate = useNavigate();
@@ -17,22 +18,23 @@ export function NewChatModal() {
   const digits = normalizePhone(phone);
 
   function close() {
-    const back = location.state?.background?.pathname;
+    const back = (location.state as AppLocationState | null)?.background?.pathname;
     navigate(back && back !== "/chats/new" ? back : "/chats");
   }
 
   useEffect(() => {
-    function onKey(event) {
+    function onKey(event: KeyboardEvent) {
       if (event.key !== "Escape") return;
-      const back = location.state?.background?.pathname;
+      const back = (location.state as AppLocationState | null)?.background?.pathname;
       navigate(back && back !== "/chats/new" ? back : "/chats");
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [location.state, navigate]);
 
-  async function onSubmit(event) {
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!session) return;
     if (!digits) {
       setError("Нужен номер России (11 цифр с 7) или Беларуси (12 цифр с 375)");
       return;
@@ -58,19 +60,17 @@ export function NewChatModal() {
       );
       navigate(`/chats/${encodeURIComponent(chatId)}`, { replace: true });
     } catch (requestError) {
-      setError(requestError.message || "Не удалось создать чат");
+      setError(errorMessage(requestError, "Не удалось создать чат"));
     } finally {
       setPending(false);
     }
   }
 
+  if (!session) return null;
+
   return (
     <div className="modal-backdrop" onMouseDown={close} role="presentation">
-      <form
-        className="modal"
-        onMouseDown={(event) => event.stopPropagation()}
-        onSubmit={onSubmit}
-      >
+      <form className="modal" onMouseDown={(event) => event.stopPropagation()} onSubmit={onSubmit}>
         <h2>Новый чат</h2>
         <label>
           Номер телефона

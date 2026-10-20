@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { IconChat, IconEye, IconGear, IconPeople, IconPhone } from "../icons.jsx";
-import { colorFor, initial } from "../format.js";
+import { colorFor, initial } from "../format.ts";
+import { IconChat, IconLogout } from "../icons.tsx";
+import type { Session } from "../types.ts";
 
-export function IconRail({ session, onLogout }) {
+export function IconRail({ session, onLogout }: { session: Session; onLogout: () => void }) {
   const [avatarBroken, setAvatarBroken] = useState(false);
   const letter = initial(session.phone || "A");
   const showPhoto = session.avatar && !avatarBroken;
@@ -12,15 +13,6 @@ export function IconRail({ session, onLogout }) {
         <button className="rail-btn active" type="button" aria-current="page" title="Чаты">
           <IconChat />
         </button>
-        <span className="rail-btn muted" aria-hidden="true">
-          <IconEye />
-        </span>
-        <span className="rail-btn muted" aria-hidden="true">
-          <IconPeople />
-        </span>
-        <span className="rail-btn muted" aria-hidden="true">
-          <IconPhone />
-        </span>
       </div>
       <div className="rail-bottom">
         <span
@@ -30,8 +22,9 @@ export function IconRail({ session, onLogout }) {
         >
           {showPhoto ? <img src={session.avatar} alt="" onError={() => setAvatarBroken(true)} /> : letter}
         </span>
-        <button className="rail-btn" type="button" onClick={onLogout} aria-label="Выйти" title="Выйти">
-          <IconGear />
+        <button className="rail-btn logout" type="button" onClick={onLogout}>
+          <IconLogout />
+          Выйти
         </button>
       </div>
     </aside>
