@@ -1,35 +1,34 @@
-import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { ChatLayout } from "./components/ChatLayout.jsx";
+import { LoginPage } from "./components/LoginPage.jsx";
+import { SessionProvider, useSession } from "./session.jsx";
+
+function RootRedirect() {
+  const { session } = useSession();
+  return <Navigate to={session ? "/chats" : "/login"} replace />;
+}
+
+function GuestRoute() {
+  const { session } = useSession();
+  if (session) return <Navigate to="/chats" replace />;
+  return <LoginPage />;
+}
+
+function PrivateChat() {
+  const { session } = useSession();
+  if (!session) return <Navigate to="/login" replace />;
+  return <ChatLayout />;
+}
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
-      <Route path="/login" element={<LoginGate />} />
-      <Route path="/chats" element={<ChatLayout />} />
-      <Route path="*" element={<Navigate to="/login" replace />} />
-    </Routes>
-  );
-}
-
-function LoginGate() {
-  const navigate = useNavigate();
-  return (
-    <main className="login">
-      <div className="pattern" aria-hidden="true" />
-      <form
-        className="login-card"
-        onSubmit={(event) => {
-          event.preventDefault();
-          navigate("/chats");
-        }}
-      >
-        <h1>Вход в чат</h1>
-        <p className="lead">Оболочка чата. Подключение к GREEN-API добавляется отдельным шагом.</p>
-        <button className="primary" type="submit">
-          Открыть чаты
-        </button>
-      </form>
-    </main>
+    <SessionProvider>
+      <Routes>
+        <Route path="/" element={<RootRedirect />} />
+        <Route path="/login" element={<GuestRoute />} />
+        <Route path="/chats" element={<PrivateChat />} />
+        <Route path="*" element={<RootRedirect />} />
+      </Routes>
+    </SessionProvider>
   );
 }
