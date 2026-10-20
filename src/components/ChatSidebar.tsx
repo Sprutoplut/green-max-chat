@@ -2,11 +2,11 @@ import { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { chatPreview, sortChats } from "../chatModel.ts";
 import { colorFor, formatPhone, formatTime, initial } from "../format.ts";
-import { IconPlus, IconSearch } from "../icons.tsx";
+import { IconLogout, IconPlus, IconSearch } from "../icons.tsx";
 import { useSession } from "../session.tsx";
 import { useChats } from "./chat-context.tsx";
 
-export function ChatSidebar({ activeChatId }: { activeChatId: string | null }) {
+export function ChatSidebar({ activeChatId, onLogout }: { activeChatId: string | null; onLogout: () => void }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { session } = useSession();
@@ -47,9 +47,15 @@ export function ChatSidebar({ activeChatId }: { activeChatId: string | null }) {
           </h1>
           <p className="me-phone">{formatPhone(session.phone) || "Аккаунт MAX"}</p>
         </div>
-        <button className="plus" type="button" onClick={openNewChat} aria-label="Новый чат" title="Новый чат">
-          <IconPlus />
-        </button>
+        <div className="side-actions">
+          <button className="mobile-logout" type="button" onClick={onLogout}>
+            <IconLogout />
+            Выйти
+          </button>
+          <button className="plus" type="button" onClick={openNewChat} aria-label="Новый чат" title="Новый чат">
+            <IconPlus />
+          </button>
+        </div>
       </header>
       <label className="search">
         <IconSearch />

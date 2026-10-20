@@ -174,6 +174,16 @@ svg {
   place-items: center;
 }
 
+.side-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-logout {
+  display: none;
+}
+
 .search {
   margin: 8px 12px 10px;
   display: flex;
@@ -515,6 +525,18 @@ input, textarea { font-size: 15px; }
 
 @media (max-width: 800px) {
   .rail { display: none; }
+  .mobile-logout {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 38px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: #d5dde6;
+    font-size: 14px;
+  }
   .sidebar { width: 100%; }
   .app.has-chat .sidebar { display: none; }
   .app:not(.has-chat) .thread,

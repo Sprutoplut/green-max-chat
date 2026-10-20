@@ -28,7 +28,7 @@ export function ChatLayout() {
   return (
     <div className={activeChatId ? "app has-chat" : "app"}>
       <IconRail session={session} onLogout={onLogout} />
-      <ChatSidebar activeChatId={activeChatId} />
+      <ChatSidebar activeChatId={activeChatId} onLogout={onLogout} />
       <section className="stage">
         <div className="pattern" aria-hidden="true" />
         {showRestart && (
