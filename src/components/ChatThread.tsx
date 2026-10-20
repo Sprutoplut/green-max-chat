@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent, type KeyboardEvent } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent, type KeyboardEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { createClient, errorMessage } from "../api.ts";
 import { appendOutgoing, applyHistory } from "../chatModel.ts";
@@ -24,7 +24,7 @@ export function ChatThread() {
   const [sending, setSending] = useState(false);
   const [historyPhase, setHistoryPhase] = useState<"loading" | "ready" | "error">("loading");
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const endRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -51,9 +51,16 @@ export function ChatThread() {
     };
   }, [chatId, client, update]);
 
-  useEffect(() => {
-    endRef.current?.scrollIntoView({ block: "end" });
-  }, [chat?.messages.length]);
+  useLayoutEffect(() => {
+    const list = listRef.current;
+    if (!list || historyPhase === "loading") return;
+    const pinToEnd = () => {
+      list.scrollTop = list.scrollHeight;
+    };
+    pinToEnd();
+    const frame = requestAnimationFrame(pinToEnd);
+    return () => cancelAnimationFrame(frame);
+  }, [chatId, historyPhase, chat?.messages.length]);
 
   if (!client) return null;
 
@@ -134,7 +141,7 @@ export function ChatThread() {
           <small>{formatPhone(chat.phone) || "личный чат"}</small>
         </span>
       </header>
-      <div className="messages" role="log" aria-live="polite" aria-relevant="additions">
+      <div className="messages" ref={listRef} role="log" aria-live="polite" aria-relevant="additions">
         {historyPhase === "loading" && <p className="thread-empty">Загружаем историю…</p>}
         {historyPhase === "ready" && chat.messages.length === 0 && (
           <p className="thread-empty">Текстовых сообщений пока нет</p>
@@ -149,7 +156,6 @@ export function ChatThread() {
               </span>
             </article>
           ))}
-        <div ref={endRef} />
       </div>
       <form className="composer" onSubmit={onSubmit}>
         <textarea
